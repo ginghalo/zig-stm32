@@ -8,6 +8,13 @@ The series have been written are:
 
 - F103C
 
+## Usage
+
+```cmd
+cd /path/to/zig-stm32/examples
+zig build --release=safe
+```
+
 ## zig's versioon
 
 0.13.0
