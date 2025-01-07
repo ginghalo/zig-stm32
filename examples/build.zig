@@ -65,12 +65,12 @@ pub fn build(b: *Build) void {
                     .target = target,
                 });
                 exe.root_module.addAnonymousImport("stm32", .{
-                    .root_source_file = b.path("../../stm32/stm32.zig"),
+                    .root_source_file = b.path("../stm32/stm32.zig"),
                     .target = target,
                     .optimize = optimize,
                 });
                 exe.root_module.addAnonymousImport("plugins", .{
-                    .root_source_file = b.path("../../plugins/plugins.zig"),
+                    .root_source_file = b.path("../plugins/plugins.zig"),
                     .target = target,
                     .optimize = optimize,
                 });
