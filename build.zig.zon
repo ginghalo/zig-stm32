@@ -1,11 +1,13 @@
 .{
     .name = "zig-stm32",
-    .version = "0.1.0",
+    .version = "0.1.1",
     .dependencies = .{},
     .paths = .{
         "stm32",
         "plugins",
         "build.zig",
         "build.zig.zon",
+        "LICENSE",
+        "README.md",
     },
 }
