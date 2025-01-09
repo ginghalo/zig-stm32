@@ -92,10 +92,10 @@ pub fn I2c(
             comptime _bitsize: DevBitSize,
             _addr: _DevUBitSize(_bitsize),
             comptime _T: type,
-            _value: _T,
-            _size: usize,
+            _data: []const _T,
+            _times: usize,
         ) Error!void {
-            return i.master_write_Ntimes(_cctx, _rctx, _bitsize, _addr, _T, _value, _size);
+            return i.master_write_Ntimes(_cctx, _rctx, _bitsize, _addr, _T, _data, _times);
         }
         pub inline fn master_read(
             comptime _cctx: Ct_Context,
@@ -147,10 +147,10 @@ pub fn I2c(
             comptime _mem_bitsize: MemBitSize,
             _mem_addr: _MemUBitSize(_mem_bitsize),
             comptime _T: type,
-            _value: _T,
-            _size: usize,
+            _data: []const _T,
+            _times: usize,
         ) Error!void {
-            return i.mem_write_Ntimes(_cctx, _rctx, _dev_bitsize, _dev_addr, _mem_bitsize, _mem_addr, _T, _value, _size);
+            return i.mem_write_Ntimes(_cctx, _rctx, _dev_bitsize, _dev_addr, _mem_bitsize, _mem_addr, _T, _data, _times);
         }
         pub inline fn mem_read(
             comptime _cctx: Ct_Context,

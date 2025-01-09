@@ -638,16 +638,17 @@ fn _I2c(comptime _Ct_Context: type, comptime _Rt_Context: type, comptime _no: No
                 try wait_BTF(_cctx, _rctx);
             }
         }
-        fn write_data_master_Ntimes(comptime _cctx: Ct_Context, _rctx: *Rt_Context, comptime _T: type, _value: _T, _size: usize) !void {
+        fn write_data_master_Ntimes(comptime _cctx: Ct_Context, _rctx: *Rt_Context, comptime _T: type, _data: []const _T, _times: usize) !void {
             const i = reg_i2c();
+            const size = _times * _data.len;
             var index: usize = 0;
-            while (index < _size) : (index += 1) {
+            while (index < size) : (index += 1) {
                 try wait_TXE(_cctx, _rctx);
-                i.DR.DR = t2u(_T, _value);
+                i.DR.DR = t2u(_T, _data[index % _data.len]);
 
-                if (i.SR1.BTF == 0b1 and index < _size - 1) {
+                if (i.SR1.BTF == 0b1 and index < size - 1) {
                     index += 1;
-                    i.DR.DR = t2u(_T, _value);
+                    i.DR.DR = t2u(_T, _data[index % _data.len]);
                 }
 
                 try wait_BTF(_cctx, _rctx);
@@ -828,7 +829,7 @@ fn _I2c(comptime _Ct_Context: type, comptime _Rt_Context: type, comptime _no: No
         pub fn master_write_Ntimes(comptime _cctx: Ct_Context, _rctx: *Rt_Context, comptime _bitsize: DevBitSize, _addr: switch (_bitsize) {
             .@"7bit" => u7,
             .@"10bit" => u10,
-        }, comptime _T: type, _value: _T, _size: usize) !void {
+        }, comptime _T: type, _data: []const _T, _times: usize) !void {
             const i = reg_i2c();
             defer i.CR1.STOP = 0b1;
 
@@ -836,7 +837,7 @@ fn _I2c(comptime _Ct_Context: type, comptime _Rt_Context: type, comptime _no: No
 
             try write_devaddr(_cctx, _rctx, _bitsize, _addr, false);
 
-            try write_data_master_Ntimes(_cctx, _rctx, _T, _value, _size);
+            try write_data_master_Ntimes(_cctx, _rctx, _T, _data, _times);
         }
         pub fn master_read(comptime _cctx: Ct_Context, _rctx: *Rt_Context, comptime _bitsize: DevBitSize, _addr: switch (_bitsize) {
             .@"7bit" => u7,
@@ -945,7 +946,7 @@ fn _I2c(comptime _Ct_Context: type, comptime _Rt_Context: type, comptime _no: No
         }, comptime _mem_bitsize: MemBitSize, _mem_addr: switch (_mem_bitsize) {
             .@"8bit" => u8,
             .@"16bit" => u16,
-        }, comptime _T: type, _value: _T, _size: usize) Error!void {
+        }, comptime _T: type, _data: []const _T, _times: usize) Error!void {
             const i = reg_i2c();
 
             try mem_prepare(_cctx, _rctx, false);
@@ -961,7 +962,7 @@ fn _I2c(comptime _Ct_Context: type, comptime _Rt_Context: type, comptime _no: No
                 false,
             );
 
-            try write_data_master_Ntimes(_cctx, _rctx, _T, _value, _size);
+            try write_data_master_Ntimes(_cctx, _rctx, _T, _data, _times);
         }
         pub fn mem_read(comptime _cctx: Ct_Context, _rctx: *Rt_Context, comptime _dev_bitsize: DevBitSize, _dev_addr: switch (_dev_bitsize) {
             .@"7bit" => u7,
