@@ -667,7 +667,7 @@ fn _Spi(comptime _Ct_Context: type, comptime _Rt_Context: type, comptime _no: No
                 }
             }
         }
-        fn write_data_Ntimes(comptime _cctx: Ct_Context, _rctx: *Rt_Context, comptime _T: type, _value: _T, _size: usize) Error!void {
+        fn write_data_Ntimes(comptime _cctx: Ct_Context, _rctx: *Rt_Context, comptime _T: type, _data: []const _T, _times: usize) Error!void {
             const cfg = comptime get_ct_cfg(_cctx);
             const s = reg_spi();
 
@@ -675,8 +675,8 @@ fn _Spi(comptime _Ct_Context: type, comptime _Rt_Context: type, comptime _no: No
 
             // TODO CRC
 
-            if (cfg.mstr == .slave or _size == 1) {
-                s.DR.DR = t2u(cfg.dff, _T, _value);
+            if ((cfg.mstr == .slave or _times == 1) and _data.len == 1) {
+                s.DR.DR = t2u(cfg.dff, _T, _data[0]);
                 index += 1;
             }
 
@@ -685,9 +685,9 @@ fn _Spi(comptime _Ct_Context: type, comptime _Rt_Context: type, comptime _no: No
             sys.tick.start(_cctx, _rctx, 100_000);
             defer sys.tick.stop(_cctx, _rctx);
 
-            while (index < _size) {
+            while (index < _times * _data.len) {
                 if (s.SR.TXE == 0b1) {
-                    s.DR.DR = t2u(cfg.dff, _T, _value);
+                    s.DR.DR = t2u(cfg.dff, _T, _data[index % _data.len]);
                     index += 1;
 
                     sys.tick.reset(_cctx, _rctx);
@@ -756,7 +756,7 @@ fn _Spi(comptime _Ct_Context: type, comptime _Rt_Context: type, comptime _no: No
 
             if (cfg.bidimode == .unidirection) s.SR.OVR = 0;
         }
-        pub fn write_Ntimes(comptime _cctx: Ct_Context, _rctx: *Rt_Context, comptime _T: type, _value: _T, _size: usize) !void {
+        pub fn write_Ntimes(comptime _cctx: Ct_Context, _rctx: *Rt_Context, comptime _T: type, _data: []const _T, _times: usize) !void {
             const cfg = comptime get_ct_cfg(_cctx);
             const s = reg_spi();
 
@@ -768,7 +768,7 @@ fn _Spi(comptime _Ct_Context: type, comptime _Rt_Context: type, comptime _no: No
             if (s.CR1.SPE == 0) s.CR1.SPE = 0b1;
             defer s.CR1.SPE = 0;
 
-            try write_data_Ntimes(_cctx, _rctx, _T, _value, _size);
+            try write_data_Ntimes(_cctx, _rctx, _T, _data, _times);
 
             try wait_BSY(_cctx, _rctx);
 

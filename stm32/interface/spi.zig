@@ -76,8 +76,8 @@ pub fn Spi(
         pub inline fn write(comptime _cctx: Ct_Context, _rctx: *Rt_Context, comptime _T: type, _data: []const _T) Error!void {
             return s.write(_cctx, _rctx, _T, _data);
         }
-        pub inline fn write_Ntimes(comptime _cctx: Ct_Context, _rctx: *Rt_Context, comptime _T: type, _value: _T, _size: usize) Error!void {
-            return s.write_Ntimes(_cctx, _rctx, _T, _value, _size);
+        pub inline fn write_Ntimes(comptime _cctx: Ct_Context, _rctx: *Rt_Context, comptime _T: type, _data: []const _T, _size: usize) Error!void {
+            return s.write_Ntimes(_cctx, _rctx, _T, _data, _size);
         }
         pub inline fn read(comptime _cctx: Ct_Context, _rctx: *Rt_Context, comptime _T: type, _data: []_T) Error!void {
             return s.read(_cctx, _rctx, _T, _data);
