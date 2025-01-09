@@ -67,7 +67,7 @@ pub fn I2c(comptime _mcu: type, comptime _no: _mcu.i2c.No, comptime _size: Size)
             try i2c.mem_write(_cctx, _rctx, .@"7bit", 0x3C, .@"8bit", 0x40, u8, _data);
         }
         pub fn write_data_Ntimes(comptime _cctx: Ct_Context, _rctx: *_mcu.ctx.Rt_Context, _value: u8, _times: usize) !void {
-            try i2c.mem_write_Ntimes(_cctx, _rctx, .@"7bit", 0x3C, .@"8bit", 0x40, u8, _value, _times);
+            try i2c.mem_write_Ntimes(_cctx, _rctx, .@"7bit", 0x3C, .@"8bit", 0x40, u8, @as([*]const u8, @ptrCast(&_value))[0..1], _times);
         }
         pub fn write_cmd(comptime _cctx: Ct_Context, _rctx: *_mcu.ctx.Rt_Context, _cmd: []const u8) !void {
             try i2c.mem_write(_cctx, _rctx, .@"7bit", 0x3C, .@"8bit", 0x0, u8, _cmd);
@@ -316,7 +316,7 @@ pub fn Spi(
             dc.ct_set(_cctx, _rctx, 1);
 
             nss.ct_set(_cctx, _rctx, 0);
-            try spi.write_Ntimes(_cctx, _rctx, u8, _value, _times);
+            try spi.write_Ntimes(_cctx, _rctx, u8, @as([*]const u8, @ptrCast(&_value))[0..1], _times);
             nss.ct_set(_cctx, _rctx, 1);
         }
         pub fn write_cmd(comptime _cctx: Ct_Context, _rctx: *_mcu.ctx.Rt_Context, _cmd: []const u8) !void {
